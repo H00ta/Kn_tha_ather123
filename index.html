@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>كن ذا أثر | مشاريع الخير والدعوة والتنمية</title>
+<meta name="description" content="كن ذا أثر منصة للتعريف بمشاريع الخير والدعوة والتنمية المستدامة ودعم أصحاب الأثر.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:title" content="كن ذا أثر | مشاريع الخير والدعوة والتنمية">
+<meta property="og:description" content="نصنع أثرًا يمتد للأجيال من خلال مشاريع الخير والدعوة والتنمية المستدامة.">
+<meta name="theme-color" content="#0d1117">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d1117'/%3E%3Cpath d='M32 8l6 14 15 2-11 10 3 15-13-8-13 8 3-15L11 24l15-2z' fill='%23d6aa45'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#home">تخطي إلى المحتوى</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#home" aria-label="كن ذا أثر"><span class="logo" aria-hidden="true">✦</span> كن ذا أثر</a>
+    <button class="burger" id="burger" aria-label="فتح القائمة" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
+    <nav id="menu" class="menu" aria-label="القائمة الرئيسية">
+      <a href="#home">الرئيسية</a>
+      <a href="#projects">المشاريع</a>
+      <a href="#initiatives">المبادرات</a>
+      <a href="#mission">رسالتنا</a>
+      <a href="#about">عن الموقع</a>
+      <a href="#contact">تواصل معنا</a>
+      <button class="btn gold sm" data-donate>ساهم الآن</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="wrap hero-in">
+    <h1>كن ذا <em>أثر</em></h1>
+    <p>نصنع أثرًا يمتد للأجيال من خلال مشاريع الخير والدعوة والتنمية المستدامة.</p>
+    <div class="actions">
+      <button class="btn gold" data-donate>ساهم الآن</button>
+      <a class="btn ghost" href="#projects">استكشف المشاريع</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="projects">
+  <div class="wrap">
+    <h2>مشاريعنا</h2>
+    <p class="sub">اختر مجال الأثر الذي ترغب في المساهمة فيه</p>
+    <div class="grid" id="projectGrid"></div>
+  </div>
+</section>
+
+<section class="sec alt" id="initiatives">
+  <div class="wrap">
+    <h2>المبادرات</h2>
+    <p class="sub">مجالات العمل التي تقوم عليها المنصة</p>
+    <div class="chips" id="initList"></div>
+  </div>
+</section>
+
+<section class="sec" id="mission">
+  <div class="wrap narrow">
+    <h2>رسالتنا</h2>
+    <p class="lead">نسعى لصناعة أثر مستدام في المجتمع من خلال مشاريع الخير والدعوة والتنمية.</p>
+  </div>
+</section>
+
+<section class="sec alt" id="about">
+  <div class="wrap narrow">
+    <h2>من نحن</h2>
+    <p class="lead">كن ذا أثر منصة تهدف إلى التعريف بمشاريع الخير والدعوة والتنمية المستدامة، وإتاحة وسائل واضحة للمساهمة والتواصل.</p>
+  </div>
+</section>
+
+<section class="sec" id="contact">
+  <div class="wrap">
+    <h2>تواصل معنا</h2>
+    <p class="sub">يسعدنا تواصلك في أي وقت</p>
+    <div class="contact" id="contactBox"></div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap fgrid">
+    <div>
+      <div class="brand"><span class="logo" aria-hidden="true">✦</span> كن ذا أثر</div>
+      <p>نصنع أثرًا يمتد للأجيال من خلال مشاريع الخير والدعوة والتنمية المستدامة.</p>
+    </div>
+    <div>
+      <h3>روابط</h3>
+      <a href="#home">الرئيسية</a><a href="#projects">المشاريع</a><a href="#initiatives">المبادرات</a><a href="#about">عن الموقع</a><a href="#contact">تواصل معنا</a>
+    </div>
+    <div id="footContact"></div>
+  </div>
+  <div class="wrap">
+    <div class="visits" id="visitsBox" hidden>👁 <span>عدد زيارات الموقع</span> <strong id="visitCount" aria-live="polite">0</strong></div>
+    <p class="copy">© 2026 كن ذا أثر — جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+
+<div class="float">
+  <div class="callmenu" id="callMenu" hidden></div>
+  <button class="fab call" id="callBtn" aria-label="اتصال" aria-expanded="false">📞</button>
+  <a class="fab wa" id="waFab" target="_blank" rel="noopener" aria-label="واتساب">💬</a>
+</div>
+<button class="top" id="topBtn" aria-label="العودة للأعلى" hidden>↑</button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="projectModal" aria-labelledby="pmTitle"></dialog>
+<dialog id="donateModal" aria-labelledby="dmTitle"></dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
