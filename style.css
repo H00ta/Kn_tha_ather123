@@ -117,3 +117,11 @@ dialog p{color:#d0d5dc;margin-bottom:10px}
 .gal img,.upd img{width:100%;border-radius:10px;border:1px solid var(--line);aspect-ratio:4/3;object-fit:cover}
 .uh{color:var(--gold2);margin:14px 0 6px}
 .upd{border-inline-start:2px solid var(--gold);padding:2px 14px;margin:0 0 12px}.upd small{color:var(--mut);display:block}.upd b{color:var(--gold2)}.upd img{max-width:260px;margin-top:6px}
+/* شعار منصة كن ذا أثر */
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline-block;
+}
