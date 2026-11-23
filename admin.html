@@ -3,464 +3,347 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>لوحة الإدارة | كن ذا أثر</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة إدارة كن ذا أثر</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#101820;color:#eee;font-family:Arial,sans-serif;line-height:1.7}
-header{background:#192630;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #39434a}
-h1,h2{color:#e7c76a}
-h1{font-size:21px;margin:0}
-main{max-width:1050px;margin:30px auto;padding:0 16px}
-.panel{background:#1b2933;padding:22px;border-radius:12px;margin-bottom:22px;border:1px solid #35434d}
-input,textarea,select{width:100%;padding:12px;margin:6px 0 14px;border:1px solid #46545d;border-radius:7px;background:#101820;color:white;font-size:15px}
-textarea{min-height:85px;resize:vertical}
-label{display:block;font-size:14px;color:#ddd}
-button{border:0;border-radius:7px;padding:10px 17px;cursor:pointer;font-size:14px;margin:3px}
-.primary{background:#d6aa45;color:#171717;font-weight:bold}
-.secondary{background:#354650;color:white}
-.danger{background:#8c3434;color:white}
-.item{background:#24343e;padding:13px;border-radius:8px;margin:9px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.muted{color:#aab6bd;font-size:13px}
-.hidden{display:none!important}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-#message{padding:12px;margin:12px 0;border-radius:7px;background:#263b46;display:none;overflow-wrap:anywhere}
-@media(max-width:650px){.grid{grid-template-columns:1fr}.panel{padding:15px}.item{align-items:flex-start}}
+body{margin:0;background:#101410;color:#eee;font-family:Tahoma,Arial,sans-serif}
+header{background:#1d251d;padding:20px;text-align:center;border-bottom:2px solid #c69b42}
+h1{color:#d8b45c;margin:0 0 8px}
+main{max-width:1100px;margin:25px auto;padding:15px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+button{cursor:pointer;border:0;border-radius:7px;padding:11px 16px;background:#c69b42;color:#151515;font-weight:bold}
+nav button{background:#293329;color:white}
+nav button.active{background:#c69b42;color:#111}
+section{display:none;background:#1b221b;padding:18px;border-radius:12px;margin-bottom:20px}
+section.active{display:block}
+input,textarea,select{width:100%;padding:12px;margin:7px 0 13px;background:#101710;color:white;border:1px solid #526052;border-radius:7px}
+textarea{min-height:75px}
+.item{background:#293329;padding:13px;margin:10px 0;border-radius:8px}
+.item button{margin:5px 3px}
+.danger{background:#a33;color:white}
+.green{background:#39794b;color:white}
+.small{color:#bbb;font-size:13px}
+#message{padding:10px;color:#e5c879}
+.hidden{display:none}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>كن ذا أثر | لوحة الإدارة</h1>
-  <button id="logout" class="secondary hidden">تسجيل الخروج</button>
+<h1>كن ذا أثر</h1>
+<p>لوحة الإدارة والتحكم</p>
 </header>
 
 <main>
-  <div id="message"></div>
+<div id="login">
+<h2>تسجيل دخول المدير</h2>
+<input id="email" type="email" placeholder="البريد الإلكتروني">
+<input id="password" type="password" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
+</div>
 
-  <section id="loginBox" class="panel">
-    <h2>تسجيل دخول المدير</h2>
-    <form id="loginForm">
-      <label>البريد الإلكتروني</label>
-      <input id="email" type="email" required autocomplete="username">
-      <label>كلمة المرور</label>
-      <input id="password" type="password" required autocomplete="current-password">
-      <button class="primary" type="submit">دخول</button>
-    </form>
-  </section>
+<div id="dashboard" class="hidden">
+<p>مرحباً بك في لوحة الإدارة</p>
+<nav>
+<button class="active" onclick="showTab('projects',this)">المشاريع</button>
+<button onclick="showTab('categories',this)">التصنيفات</button>
+<button onclick="showTab('contributions',this)">المساهمات</button>
+<button onclick="showTab('beneficiaries',this)">المستفيدون</button>
+<button onclick="showTab('volunteers',this)">المتطوعون</button>
+</nav>
 
-  <section id="dashboard" class="hidden">
+<section id="projects" class="active">
+<h2>إدارة المشاريع</h2>
+<input id="pTitle" placeholder="اسم المشروع">
+<input id="pSlug" placeholder="رابط المشروع المختصر (اختياري)">
+<select id="pCategory"><option value="">اختر التصنيف</option></select>
+<textarea id="pSummary" placeholder="نبذة مختصرة"></textarea>
+<textarea id="pDescription" placeholder="تفاصيل المشروع"></textarea>
+<input id="pImage" placeholder="رابط صورة المشروع">
+<input id="pLocation" placeholder="الموقع">
+<input id="pTarget" type="number" placeholder="المبلغ المستهدف">
+<input id="pBeneficiaries" type="number" placeholder="عدد المستفيدين">
+<select id="pStatus">
+<option value="published">منشور ومتاح للمساهمة</option>
+<option value="draft">مسودة</option>
+<option value="in_progress">قيد التنفيذ</option>
+<option value="completed">مكتمل</option>
+<option value="paused">متوقف مؤقتاً</option>
+</select>
+<button onclick="saveProject()">حفظ المشروع</button>
+<button class="danger" onclick="clearProject()">إلغاء التعديل</button>
+<div id="projectList"></div>
+</section>
 
-    <div class="panel">
-      <h2>إدارة التصنيفات</h2>
-      <form id="categoryForm">
-        <input id="categoryId" type="hidden">
-        <label>اسم التصنيف</label>
-        <input id="categoryName" required>
-        <label>الوصف</label>
-        <textarea id="categoryDescription"></textarea>
-        <label>الأيقونة (Emoji)</label>
-        <input id="categoryIcon" placeholder="مثلاً: 💧">
-        <label>
-          <input id="categoryActive" type="checkbox" checked style="width:auto">
-          تصنيف نشط
-        </label>
-        <button class="primary" type="submit">حفظ التصنيف</button>
-        <button class="secondary" type="button" id="cancelCategory">إلغاء</button>
-      </form>
-      <div id="categoriesList"></div>
-    </div>
+<section id="categories">
+<h2>إدارة التصنيفات</h2>
+<input id="cName" placeholder="اسم التصنيف">
+<input id="cIcon" placeholder="الأيقونة، مثال 💧">
+<textarea id="cDescription" placeholder="وصف التصنيف"></textarea>
+<button onclick="saveCategory()">إضافة التصنيف</button>
+<div id="categoryList"></div>
+</section>
 
-    <div class="panel">
-      <h2>إضافة أو تعديل مشروع</h2>
-      <form id="projectForm">
-        <input id="projectId" type="hidden">
+<section id="contributions">
+<h2>طلبات المساهمات</h2>
+<p class="small">راجع التحويل أولاً، ثم اعتمد المساهمة أو ارفضها.</p>
+<div id="contributionList"></div>
+</section>
 
-        <label>اسم المشروع</label>
-        <input id="projectTitle" required>
+<section id="beneficiaries">
+<h2>إدارة المستفيدين</h2>
+<input id="bName" placeholder="اسم المستفيد">
+<input id="bPhone" placeholder="رقم الهاتف">
+<input id="bLocation" placeholder="المنطقة">
+<input id="bType" placeholder="نوع المساعدة">
+<textarea id="bNotes" placeholder="ملاحظات"></textarea>
+<button onclick="saveBeneficiary()">إضافة مستفيد</button>
+<div id="beneficiaryList"></div>
+</section>
 
-        <div class="grid">
-          <div>
-            <label>التصنيف</label>
-            <select id="projectCategory">
-              <option value="">بدون تصنيف</option>
-            </select>
-          </div>
-          <div>
-            <label>حالة المشروع</label>
-            <select id="projectStatus">
-              <option value="مسودة">مسودة</option>
-              <option value="مفتوح للمساهمة">مفتوح للمساهمة</option>
-              <option value="قيد التنفيذ">قيد التنفيذ</option>
-              <option value="مكتمل">مكتمل</option>
-              <option value="متوقف مؤقتًا">متوقف مؤقتًا</option>
-            </select>
-          </div>
-        </div>
+<section id="volunteers">
+<h2>طلبات التطوع</h2>
+<div id="volunteerList"></div>
+</section>
 
-        <label>ملخص المشروع</label>
-        <textarea id="projectSummary"></textarea>
-
-        <label>التفاصيل الكاملة</label>
-        <textarea id="projectDescription"></textarea>
-
-        <label>رابط صورة المشروع</label>
-        <input id="projectImage" type="url" placeholder="https://...">
-
-        <label>الموقع</label>
-        <input id="projectLocation">
-
-        <div class="grid">
-          <div>
-            <label>عدد المستفيدين</label>
-            <input id="projectBeneficiaries" type="number" min="0">
-          </div>
-          <div>
-            <label>المبلغ المستهدف</label>
-            <input id="projectAmount" type="number" min="0" step="0.01">
-          </div>
-        </div>
-
-        <label>العملة</label>
-        <input id="projectCurrency" value="SDG">
-
-        <div class="grid">
-          <div>
-            <label>تاريخ البداية</label>
-            <input id="projectStart" type="date">
-          </div>
-          <div>
-            <label>تاريخ النهاية</label>
-            <input id="projectEnd" type="date">
-          </div>
-        </div>
-
-        <label>تاريخ النشر</label>
-        <input id="projectPublished" type="date">
-
-        <button class="primary" type="submit">حفظ المشروع</button>
-        <button class="secondary" type="button" id="cancelProject">إلغاء</button>
-      </form>
-    </div>
-
-    <div class="panel">
-      <h2>المشاريع المسجلة</h2>
-      <div id="projectsList">جارٍ التحميل...</div>
-    </div>
-
-  </section>
+<button class="danger" onclick="logout()">تسجيل الخروج</button>
+</div>
+<div id="message"></div>
 </main>
 
 <script>
-(() => {
-  const $ = id => document.getElementById(id);
-  const client = window.supabaseClient;
-  let categories = [];
-  let projects = [];
+const db = window.supabaseClient;
+let editProjectId = null;
 
-  function message(text) {
-    $("message").style.display = "block";
-    $("message").textContent = text;
-  }
+function msg(t){document.getElementById("message").textContent=t}
+function showTab(id,btn){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ loadAll();
+}
 
-  function clearMessage() {
-    $("message").style.display = "none";
-  }
+async function login(){
+ const {data,error}=await db.auth.signInWithPassword({
+  email:email.value.trim(),password:password.value
+ });
+ if(error){msg("تعذر تسجيل الدخول: "+error.message);return}
+ const {data:role,error:roleError}=await db.from("user_roles")
+  .select("role").eq("user_id",data.user.id).maybeSingle();
+ if(roleError || !role || !["admin","supervisor"].includes(role.role)){
+  await db.auth.signOut();msg("هذا الحساب غير مصرح له بدخول اللوحة.");return;
+ }
+ if(role.role!=="admin"){
+  await db.auth.signOut();msg("هذه اللوحة مخصصة للمدير حالياً.");return;
+ }
+ loginBox();
+}
 
-  function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    })[c]);
-  }
+function loginBox(){
+ document.getElementById("login").classList.add("hidden");
+ document.getElementById("dashboard").classList.remove("hidden");
+ msg("تم تسجيل الدخول.");
+ loadAll();
+}
 
-  function setLoggedIn(value) {
-    $("loginBox").classList.toggle("hidden", value);
-    $("dashboard").classList.toggle("hidden", !value);
-    $("logout").classList.toggle("hidden", !value);
-  }
+async function logout(){
+ await db.auth.signOut();
+ location.reload();
+}
 
-  async function checkAdmin() {
-    const {data:{user},error} = await client.auth.getUser();
-    if (error || !user) {
-      setLoggedIn(false);
-      return false;
-    }
+async function loadAll(){
+ await Promise.all([
+  loadCategories(),loadProjects(),loadContributions(),
+  loadBeneficiaries(),loadVolunteers()
+ ]);
+}
 
-    const {data:role,error:roleError} = await client
-      .from("user_roles")
-      .select("role")
-      .eq("user_id",user.id)
-      .maybeSingle();
+async function loadCategories(){
+ const {data,error}=await db.from("categories").select("*").order("created_at",{ascending:false});
+ if(error){msg(error.message);return}
+ pCategory.innerHTML='<option value="">اختر التصنيف</option>';
+ categoryList.innerHTML="";
+ (data||[]).forEach(c=>{
+  pCategory.innerHTML+=`<option value="${c.id}">${safe(c.name)}</option>`;
+  categoryList.innerHTML+=`<div class="item"><b>${safe(c.icon||"")} ${safe(c.name)}</b><p>${safe(c.description||"")}</p><button class="danger" onclick="deleteCategory('${c.id}')">حذف</button></div>`;
+ });
+}
 
-    if (roleError || !role || role.role !== "admin") {
-      await client.auth.signOut();
-      setLoggedIn(false);
-      message("هذا الحساب لا يمتلك صلاحية المدير.");
-      return false;
-    }
+async function saveCategory(){
+ const name=cName.value.trim();
+ if(!name){msg("اكتب اسم التصنيف");return}
+ const {error}=await db.from("categories").insert({
+  name,icon:cIcon.value.trim(),description:cDescription.value.trim(),is_active:true
+ });
+ if(error){msg(error.message);return}
+ cName.value=cIcon.value=cDescription.value="";
+ msg("تمت إضافة التصنيف");
+ loadCategories();
+}
 
-    setLoggedIn(true);
-    await loadData();
-    return true;
-  }
+async function deleteCategory(id){
+ if(!confirm("هل تريد حذف التصنيف؟"))return;
+ const {error}=await db.from("categories").delete().eq("id",id);
+ msg(error?error.message:"تم الحذف");
+ loadCategories();
+}
 
-  async function loadData() {
-    clearMessage();
+async function loadProjects(){
+ const {data,error}=await db.from("projects").select("*").order("created_at",{ascending:false});
+ if(error){msg(error.message);return}
+ projectList.innerHTML="";
+ (data||[]).forEach(p=>{
+  projectList.innerHTML+=`<div class="item">
+  <b>${safe(p.title)}</b><p>${safe(p.status||"")}</p>
+  <button onclick="editProject('${p.id}')">تعديل</button>
+  <button class="danger" onclick="deleteProject('${p.id}')">حذف</button>
+  </div>`;
+ });
+}
 
-    const [catResult,projectResult] = await Promise.all([
-      client.from("categories").select("*").order("created_at",{ascending:false}),
-      client.from("projects").select("*").order("created_at",{ascending:false})
-    ]);
+async function saveProject(){
+ const title=pTitle.value.trim();
+ if(!title){msg("اكتب اسم المشروع");return}
+ const record={
+  title,slug:pSlug.value.trim()||"project-"+Date.now(),
+  category_id:pCategory.value||null,
+  summary:pSummary.value.trim(),description:pDescription.value.trim(),
+  cover_image_url:pImage.value.trim(),location:pLocation.value.trim(),
+  target_amount:Number(pTarget.value)||null,
+  beneficiary_count:Number(pBeneficiaries.value)||null,
+  currency:"SDG",status:pStatus.value,
+  published_at:pStatus.value==="published"?new Date().toISOString():null
+ };
+ const result=editProjectId
+  ?await db.from("projects").update(record).eq("id",editProjectId)
+  :await db.from("projects").insert(record);
+ if(result.error){msg(result.error.message);return}
+ clearProject();msg("تم حفظ المشروع");loadProjects();
+}
 
-    if (catResult.error) {
-      message("خطأ تحميل التصنيفات: " + catResult.error.message);
-      return;
-    }
-    if (projectResult.error) {
-      message("خطأ تحميل المشاريع: " + projectResult.error.message);
-      return;
-    }
+async function editProject(id){
+ const {data,error}=await db.from("projects").select("*").eq("id",id).single();
+ if(error){msg(error.message);return}
+ editProjectId=id;
+ pTitle.value=data.title||"";pSlug.value=data.slug||"";
+ pCategory.value=data.category_id||"";
+ pSummary.value=data.summary||"";pDescription.value=data.description||"";
+ pImage.value=data.cover_image_url||"";pLocation.value=data.location||"";
+ pTarget.value=data.target_amount||"";pBeneficiaries.value=data.beneficiary_count||"";
+ pStatus.value=data.status||"draft";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
 
-    categories = catResult.data || [];
-    projects = projectResult.data || [];
+function clearProject(){
+ editProjectId=null;
+ ["pTitle","pSlug","pSummary","pDescription","pImage","pLocation","pTarget","pBeneficiaries"].forEach(id=>document.getElementById(id).value="");
+ pCategory.value="";pStatus.value="published";
+}
 
-    renderCategories();
-    renderProjects();
-    fillCategorySelect();
-  }
+async function deleteProject(id){
+ if(!confirm("هل تريد حذف المشروع؟"))return;
+ const {error}=await db.from("projects").delete().eq("id",id);
+ msg(error?error.message:"تم حذف المشروع");loadProjects();
+}
 
-  function fillCategorySelect() {
-    $("projectCategory").innerHTML =
-      '<option value="">بدون تصنيف</option>' +
-      categories.map(c =>
-        `<option value="${c.id}">${escapeHTML(c.name)}</option>`
-      ).join("");
-  }
+async function loadContributions(){
+ const {data,error}=await db.from("contributions").select("*").order("created_at",{ascending:false});
+ if(error){msg(error.message);return}
+ contributionList.innerHTML="";
+ (data||[]).forEach(c=>{
+  contributionList.innerHTML+=`<div class="item">
+  <b>${safe(c.donor_name)}</b>
+  <p>الهاتف: ${safe(c.donor_phone)} | المبلغ: ${safe(c.amount)} ${safe(c.currency||"")}</p>
+  <p>طريقة الدفع: ${safe(c.payment_method)} | رقم العملية: ${safe(c.transaction_reference||"—")}</p>
+  <p>الحالة: ${safe(c.status)}</p>
+  <button class="green" onclick="reviewContribution('${c.id}','verified')">اعتماد</button>
+  <button class="danger" onclick="reviewContribution('${c.id}','rejected')">رفض</button>
+  </div>`;
+ });
+}
 
-  function renderCategories() {
-    $("categoriesList").innerHTML = categories.length
-      ? categories.map(c => `
-        <div class="item">
-          <div>
-            <b>${escapeHTML(c.icon || "")} ${escapeHTML(c.name)}</b>
-            <div class="muted">${c.is_active ? "نشط" : "غير نشط"}</div>
-          </div>
-          <div>
-            <button class="secondary" data-edit-category="${c.id}">تعديل</button>
-            <button class="danger" data-delete-category="${c.id}">حذف</button>
-          </div>
-        </div>
-      `).join("")
-      : '<p class="muted">لا توجد تصنيفات حتى الآن.</p>';
-  }
+async function reviewContribution(id,status){
+ if(!confirm("هل تحققت من التحويل وتريد تغيير الحالة؟"))return;
+ const {data:userData}=await db.auth.getUser();
+ const {error}=await db.from("contributions").update({
+  status,reviewed_at:new Date().toISOString(),reviewed_by:userData.user.id
+ }).eq("id",id);
+ msg(error?error.message:"تم تحديث حالة المساهمة");
+ loadContributions();
+}
 
-  function renderProjects() {
-    $("projectsList").innerHTML = projects.length
-      ? projects.map(p => `
-        <div class="item">
-          <div>
-            <b>${escapeHTML(p.title)}</b>
-            <div class="muted">${escapeHTML(p.status || "")}</div>
-          </div>
-          <div>
-            <button class="secondary" data-edit-project="${p.id}">تعديل</button>
-            <button class="danger" data-delete-project="${p.id}">حذف</button>
-          </div>
-        </div>
-      `).join("")
-      : '<p class="muted">لا توجد مشاريع مسجلة حتى الآن.</p>';
-  }
+async function saveBeneficiary(){
+ const full_name=bName.value.trim();
+ if(!full_name){msg("اكتب اسم المستفيد");return}
+ const {error}=await db.from("beneficiaries").insert({
+  full_name,phone:bPhone.value.trim(),location:bLocation.value.trim(),
+  assistance_type:bType.value.trim(),notes:bNotes.value.trim(),status:"active"
+ });
+ if(error){msg(error.message);return}
+ ["bName","bPhone","bLocation","bType","bNotes"].forEach(id=>document.getElementById(id).value="");
+ msg("تمت إضافة المستفيد");loadBeneficiaries();
+}
 
-  function resetCategory() {
-    $("categoryForm").reset();
-    $("categoryId").value = "";
-    $("categoryActive").checked = true;
-  }
+async function loadBeneficiaries(){
+ const {data,error}=await db.from("beneficiaries").select("*").order("created_at",{ascending:false});
+ if(error){msg(error.message);return}
+ beneficiaryList.innerHTML="";
+ (data||[]).forEach(b=>{
+  beneficiaryList.innerHTML+=`<div class="item"><b>${safe(b.full_name)}</b>
+  <p>${safe(b.phone||"")} — ${safe(b.location||"")} — ${safe(b.assistance_type||"")}</p>
+  <p>الحالة: ${safe(b.status)}</p>
+  <button onclick="beneficiaryStatus('${b.id}','completed')">إكمال الحالة</button>
+  <button class="danger" onclick="deleteBeneficiary('${b.id}')">حذف</button></div>`;
+ });
+}
 
-  function resetProject() {
-    $("projectForm").reset();
-    $("projectId").value = "";
-    $("projectCurrency").value = "SDG";
-    $("projectStatus").value = "مسودة";
-    fillCategorySelect();
-  }
+async function beneficiaryStatus(id,status){
+ const {error}=await db.from("beneficiaries").update({status}).eq("id",id);
+ msg(error?error.message:"تم تحديث الحالة");loadBeneficiaries();
+}
 
-  $("loginForm").addEventListener("submit",async e => {
-    e.preventDefault();
-    clearMessage();
+async function deleteBeneficiary(id){
+ if(!confirm("حذف سجل المستفيد؟"))return;
+ const {error}=await db.from("beneficiaries").delete().eq("id",id);
+ msg(error?error.message:"تم الحذف");loadBeneficiaries();
+}
 
-    const {error} = await client.auth.signInWithPassword({
-      email:$("email").value.trim(),
-      password:$("password").value
-    });
+async function loadVolunteers(){
+ const {data,error}=await db.from("volunteers").select("*").order("created_at",{ascending:false});
+ if(error){msg(error.message);return}
+ volunteerList.innerHTML="";
+ (data||[]).forEach(v=>{
+  volunteerList.innerHTML+=`<div class="item"><b>${safe(v.full_name)}</b>
+  <p>الهاتف: ${safe(v.phone)} | المنطقة: ${safe(v.location||"")}</p>
+  <p>المهارات: ${safe(v.skills||"")} | التوفر: ${safe(v.availability||"")}</p>
+  <p>الحالة: ${safe(v.status)}</p>
+  <button class="green" onclick="volunteerStatus('${v.id}','approved')">قبول</button>
+  <button class="danger" onclick="volunteerStatus('${v.id}','rejected')">رفض</button>
+  </div>`;
+ });
+}
 
-    if (error) {
-      message("تعذر تسجيل الدخول: " + error.message);
-      return;
-    }
+async function volunteerStatus(id,status){
+ const {error}=await db.from("volunteers").update({status}).eq("id",id);
+ msg(error?error.message:"تم تحديث الطلب");loadVolunteers();
+}
 
-    await checkAdmin();
-  });
+function safe(value){
+ return String(value??"").replace(/[&<>"']/g,ch=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[ch]));
+}
 
-  $("logout").addEventListener("click",async () => {
-    await client.auth.signOut();
-    setLoggedIn(false);
-    message("تم تسجيل الخروج.");
-  });
-
-  $("categoryForm").addEventListener("submit",async e => {
-    e.preventDefault();
-    clearMessage();
-
-    const id = $("categoryId").value;
-    const record = {
-      name:$("categoryName").value.trim(),
-      description:$("categoryDescription").value.trim(),
-      icon:$("categoryIcon").value.trim(),
-      is_active:$("categoryActive").checked
-    };
-
-    const result = id
-      ? await client.from("categories").update(record).eq("id",id)
-      : await client.from("categories").insert(record);
-
-    if (result.error) {
-      message("تعذر حفظ التصنيف: " + result.error.message);
-      return;
-    }
-
-    resetCategory();
-    await loadData();
-    message("تم حفظ التصنيف بنجاح.");
-  });
-
-  $("projectForm").addEventListener("submit",async e => {
-    e.preventDefault();
-    clearMessage();
-
-    const id = $("projectId").value;
-    const title = $("projectTitle").value.trim();
-
-    const record = {
-      title,
-      slug: id
-        ? (projects.find(p => p.id === id)?.slug || "project-" + Date.now())
-        : "project-" + Date.now(),
-      category_id:$("projectCategory").value || null,
-      summary:$("projectSummary").value.trim(),
-      description:$("projectDescription").value.trim(),
-      cover_image_url:$("projectImage").value.trim() || null,
-      location:$("projectLocation").value.trim(),
-      beneficiary_count:$("projectBeneficiaries").value
-        ? Number($("projectBeneficiaries").value) : null,
-      target_amount:$("projectAmount").value
-        ? Number($("projectAmount").value) : null,
-      currency:$("projectCurrency").value.trim() || "SDG",
-      status:$("projectStatus").value,
-      start_date:$("projectStart").value || null,
-      end_date:$("projectEnd").value || null,
-      published_at:$("projectPublished").value
-        ? new Date($("projectPublished").value + "T12:00:00").toISOString()
-        : null,
-      updated_at:new Date().toISOString()
-    };
-
-    const result = id
-      ? await client.from("projects").update(record).eq("id",id)
-      : await client.from("projects").insert(record);
-
-    if (result.error) {
-      message("تعذر حفظ المشروع: " + result.error.message);
-      return;
-    }
-
-    resetProject();
-    await loadData();
-    message("تم حفظ المشروع بنجاح.");
-  });
-
-  $("categoriesList").addEventListener("click",async e => {
-    const edit = e.target.closest("[data-edit-category]");
-    const del = e.target.closest("[data-delete-category]");
-
-    if (edit) {
-      const c = categories.find(x => x.id === edit.dataset.editCategory);
-      if (!c) return;
-      $("categoryId").value = c.id;
-      $("categoryName").value = c.name || "";
-      $("categoryDescription").value = c.description || "";
-      $("categoryIcon").value = c.icon || "";
-      $("categoryActive").checked = c.is_active;
-      $("categoryForm").scrollIntoView({behavior:"smooth"});
-    }
-
-    if (del) {
-      const id = del.dataset.deleteCategory;
-      if (!confirm("هل تريد حذف هذا التصنيف؟")) return;
-
-      const {error} = await client.from("categories").delete().eq("id",id);
-      if (error) {
-        message("تعذر حذف التصنيف. قد يكون مرتبطاً بمشاريع: " + error.message);
-        return;
-      }
-      await loadData();
-      message("تم حذف التصنيف.");
-    }
-  });
-
-  $("projectsList").addEventListener("click",async e => {
-    const edit = e.target.closest("[data-edit-project]");
-    const del = e.target.closest("[data-delete-project]");
-
-    if (edit) {
-      const p = projects.find(x => x.id === edit.dataset.editProject);
-      if (!p) return;
-
-      $("projectId").value = p.id;
-      $("projectTitle").value = p.title || "";
-      $("projectCategory").value = p.category_id || "";
-      $("projectStatus").value = p.status || "مسودة";
-      $("projectSummary").value = p.summary || "";
-      $("projectDescription").value = p.description || "";
-      $("projectImage").value = p.cover_image_url || "";
-      $("projectLocation").value = p.location || "";
-      $("projectBeneficiaries").value = p.beneficiary_count ?? "";
-      $("projectAmount").value = p.target_amount ?? "";
-      $("projectCurrency").value = p.currency || "SDG";
-      $("projectStart").value = p.start_date || "";
-      $("projectEnd").value = p.end_date || "";
-      $("projectPublished").value = p.published_at
-        ? p.published_at.slice(0,10) : "";
-
-      $("projectForm").scrollIntoView({behavior:"smooth"});
-    }
-
-    if (del) {
-      const id = del.dataset.deleteProject;
-      if (!confirm("هل تريد حذف هذا المشروع نهائياً؟")) return;
-
-      const {error} = await client.from("projects").delete().eq("id",id);
-      if (error) {
-        message("تعذر حذف المشروع: " + error.message);
-        return;
-      }
-
-      await loadData();
-      message("تم حذف المشروع.");
-    }
-  });
-
-  $("cancelCategory").addEventListener("click",resetCategory);
-  $("cancelProject").addEventListener("click",resetProject);
-
-  if (!client) {
-    message("تعذر العثور على إعدادات Supabase. راجع ملف supabase-config.js.");
-    return;
-  }
-
-  checkAdmin();
+(async()=>{
+ const {data}=await db.auth.getSession();
+ if(data.session){
+  const {data:role}=await db.from("user_roles").select("role")
+   .eq("user_id",data.session.user.id).maybeSingle();
+  if(role?.role==="admin")loginBox();
+ }
 })();
 </script>
 </body>
