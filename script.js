@@ -713,3 +713,27 @@ document.querySelectorAll(".rv").forEach((n) => io.observe(n));
 
   addEventListener("load", () => setTimeout(load, 1500));
 })();
+// ==========================================
+// COUNTER: إجمالي زيارات منصة كن ذا أثر
+// ==========================================
+(async function siteVisitCounter() {
+  const counterElement = document.getElementById("visitCount");
+  const counterBox = document.getElementById("visitsBox");
+
+  try {
+    const { data, error } = await window.supabaseClient
+      .rpc("register_site_visit");
+
+    if (error) throw error;
+
+    if (counterElement) {
+      counterElement.textContent = Number(data).toLocaleString("en-US");
+    }
+
+    if (counterBox) {
+      counterBox.hidden = false;
+    }
+  } catch (error) {
+    console.error("Visit counter error:", error);
+  }
+})();
