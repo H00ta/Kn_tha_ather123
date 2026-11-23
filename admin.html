@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة الإدارة | كن ذا أثر</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101820;color:#eee;font-family:Arial,sans-serif;line-height:1.7}
+header{background:#192630;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #39434a}
+h1,h2{color:#e7c76a}
+h1{font-size:21px;margin:0}
+main{max-width:1050px;margin:30px auto;padding:0 16px}
+.panel{background:#1b2933;padding:22px;border-radius:12px;margin-bottom:22px;border:1px solid #35434d}
+input,textarea,select{width:100%;padding:12px;margin:6px 0 14px;border:1px solid #46545d;border-radius:7px;background:#101820;color:white;font-size:15px}
+textarea{min-height:85px;resize:vertical}
+label{display:block;font-size:14px;color:#ddd}
+button{border:0;border-radius:7px;padding:10px 17px;cursor:pointer;font-size:14px;margin:3px}
+.primary{background:#d6aa45;color:#171717;font-weight:bold}
+.secondary{background:#354650;color:white}
+.danger{background:#8c3434;color:white}
+.item{background:#24343e;padding:13px;border-radius:8px;margin:9px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.muted{color:#aab6bd;font-size:13px}
+.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#message{padding:12px;margin:12px 0;border-radius:7px;background:#263b46;display:none;overflow-wrap:anywhere}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.panel{padding:15px}.item{align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>كن ذا أثر | لوحة الإدارة</h1>
+  <button id="logout" class="secondary hidden">تسجيل الخروج</button>
+</header>
+
+<main>
+  <div id="message"></div>
+
+  <section id="loginBox" class="panel">
+    <h2>تسجيل دخول المدير</h2>
+    <form id="loginForm">
+      <label>البريد الإلكتروني</label>
+      <input id="email" type="email" required autocomplete="username">
+      <label>كلمة المرور</label>
+      <input id="password" type="password" required autocomplete="current-password">
+      <button class="primary" type="submit">دخول</button>
+    </form>
+  </section>
+
+  <section id="dashboard" class="hidden">
+
+    <div class="panel">
+      <h2>إدارة التصنيفات</h2>
+      <form id="categoryForm">
+        <input id="categoryId" type="hidden">
+        <label>اسم التصنيف</label>
+        <input id="categoryName" required>
+        <label>الوصف</label>
+        <textarea id="categoryDescription"></textarea>
+        <label>الأيقونة (Emoji)</label>
+        <input id="categoryIcon" placeholder="مثلاً: 💧">
+        <label>
+          <input id="categoryActive" type="checkbox" checked style="width:auto">
+          تصنيف نشط
+        </label>
+        <button class="primary" type="submit">حفظ التصنيف</button>
+        <button class="secondary" type="button" id="cancelCategory">إلغاء</button>
+      </form>
+      <div id="categoriesList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>إضافة أو تعديل مشروع</h2>
+      <form id="projectForm">
+        <input id="projectId" type="hidden">
+
+        <label>اسم المشروع</label>
+        <input id="projectTitle" required>
+
+        <div class="grid">
+          <div>
+            <label>التصنيف</label>
+            <select id="projectCategory">
+              <option value="">بدون تصنيف</option>
+            </select>
+          </div>
+          <div>
+            <label>حالة المشروع</label>
+            <select id="projectStatus">
+              <option value="مسودة">مسودة</option>
+              <option value="مفتوح للمساهمة">مفتوح للمساهمة</option>
+              <option value="قيد التنفيذ">قيد التنفيذ</option>
+              <option value="مكتمل">مكتمل</option>
+              <option value="متوقف مؤقتًا">متوقف مؤقتًا</option>
+            </select>
+          </div>
+        </div>
+
+        <label>ملخص المشروع</label>
+        <textarea id="projectSummary"></textarea>
+
+        <label>التفاصيل الكاملة</label>
+        <textarea id="projectDescription"></textarea>
+
+        <label>رابط صورة المشروع</label>
+        <input id="projectImage" type="url" placeholder="https://...">
+
+        <label>الموقع</label>
+        <input id="projectLocation">
+
+        <div class="grid">
+          <div>
+            <label>عدد المستفيدين</label>
+            <input id="projectBeneficiaries" type="number" min="0">
+          </div>
+          <div>
+            <label>المبلغ المستهدف</label>
+            <input id="projectAmount" type="number" min="0" step="0.01">
+          </div>
+        </div>
+
+        <label>العملة</label>
+        <input id="projectCurrency" value="SDG">
+
+        <div class="grid">
+          <div>
+            <label>تاريخ البداية</label>
+            <input id="projectStart" type="date">
+          </div>
+          <div>
+            <label>تاريخ النهاية</label>
+            <input id="projectEnd" type="date">
+          </div>
+        </div>
+
+        <label>تاريخ النشر</label>
+        <input id="projectPublished" type="date">
+
+        <button class="primary" type="submit">حفظ المشروع</button>
+        <button class="secondary" type="button" id="cancelProject">إلغاء</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>المشاريع المسجلة</h2>
+      <div id="projectsList">جارٍ التحميل...</div>
+    </div>
+
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const client = window.supabaseClient;
+  let categories = [];
+  let projects = [];
+
+  function message(text) {
+    $("message").style.display = "block";
+    $("message").textContent = text;
+  }
+
+  function clearMessage() {
+    $("message").style.display = "none";
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    })[c]);
+  }
+
+  function setLoggedIn(value) {
+    $("loginBox").classList.toggle("hidden", value);
+    $("dashboard").classList.toggle("hidden", !value);
+    $("logout").classList.toggle("hidden", !value);
+  }
+
+  async function checkAdmin() {
+    const {data:{user},error} = await client.auth.getUser();
+    if (error || !user) {
+      setLoggedIn(false);
+      return false;
+    }
+
+    const {data:role,error:roleError} = await client
+      .from("user_roles")
+      .select("role")
+      .eq("user_id",user.id)
+      .maybeSingle();
+
+    if (roleError || !role || role.role !== "admin") {
+      await client.auth.signOut();
+      setLoggedIn(false);
+      message("هذا الحساب لا يمتلك صلاحية المدير.");
+      return false;
+    }
+
+    setLoggedIn(true);
+    await loadData();
+    return true;
+  }
+
+  async function loadData() {
+    clearMessage();
+
+    const [catResult,projectResult] = await Promise.all([
+      client.from("categories").select("*").order("created_at",{ascending:false}),
+      client.from("projects").select("*").order("created_at",{ascending:false})
+    ]);
+
+    if (catResult.error) {
+      message("خطأ تحميل التصنيفات: " + catResult.error.message);
+      return;
+    }
+    if (projectResult.error) {
+      message("خطأ تحميل المشاريع: " + projectResult.error.message);
+      return;
+    }
+
+    categories = catResult.data || [];
+    projects = projectResult.data || [];
+
+    renderCategories();
+    renderProjects();
+    fillCategorySelect();
+  }
+
+  function fillCategorySelect() {
+    $("projectCategory").innerHTML =
+      '<option value="">بدون تصنيف</option>' +
+      categories.map(c =>
+        `<option value="${c.id}">${escapeHTML(c.name)}</option>`
+      ).join("");
+  }
+
+  function renderCategories() {
+    $("categoriesList").innerHTML = categories.length
+      ? categories.map(c => `
+        <div class="item">
+          <div>
+            <b>${escapeHTML(c.icon || "")} ${escapeHTML(c.name)}</b>
+            <div class="muted">${c.is_active ? "نشط" : "غير نشط"}</div>
+          </div>
+          <div>
+            <button class="secondary" data-edit-category="${c.id}">تعديل</button>
+            <button class="danger" data-delete-category="${c.id}">حذف</button>
+          </div>
+        </div>
+      `).join("")
+      : '<p class="muted">لا توجد تصنيفات حتى الآن.</p>';
+  }
+
+  function renderProjects() {
+    $("projectsList").innerHTML = projects.length
+      ? projects.map(p => `
+        <div class="item">
+          <div>
+            <b>${escapeHTML(p.title)}</b>
+            <div class="muted">${escapeHTML(p.status || "")}</div>
+          </div>
+          <div>
+            <button class="secondary" data-edit-project="${p.id}">تعديل</button>
+            <button class="danger" data-delete-project="${p.id}">حذف</button>
+          </div>
+        </div>
+      `).join("")
+      : '<p class="muted">لا توجد مشاريع مسجلة حتى الآن.</p>';
+  }
+
+  function resetCategory() {
+    $("categoryForm").reset();
+    $("categoryId").value = "";
+    $("categoryActive").checked = true;
+  }
+
+  function resetProject() {
+    $("projectForm").reset();
+    $("projectId").value = "";
+    $("projectCurrency").value = "SDG";
+    $("projectStatus").value = "مسودة";
+    fillCategorySelect();
+  }
+
+  $("loginForm").addEventListener("submit",async e => {
+    e.preventDefault();
+    clearMessage();
+
+    const {error} = await client.auth.signInWithPassword({
+      email:$("email").value.trim(),
+      password:$("password").value
+    });
+
+    if (error) {
+      message("تعذر تسجيل الدخول: " + error.message);
+      return;
+    }
+
+    await checkAdmin();
+  });
+
+  $("logout").addEventListener("click",async () => {
+    await client.auth.signOut();
+    setLoggedIn(false);
+    message("تم تسجيل الخروج.");
+  });
+
+  $("categoryForm").addEventListener("submit",async e => {
+    e.preventDefault();
+    clearMessage();
+
+    const id = $("categoryId").value;
+    const record = {
+      name:$("categoryName").value.trim(),
+      description:$("categoryDescription").value.trim(),
+      icon:$("categoryIcon").value.trim(),
+      is_active:$("categoryActive").checked
+    };
+
+    const result = id
+      ? await client.from("categories").update(record).eq("id",id)
+      : await client.from("categories").insert(record);
+
+    if (result.error) {
+      message("تعذر حفظ التصنيف: " + result.error.message);
+      return;
+    }
+
+    resetCategory();
+    await loadData();
+    message("تم حفظ التصنيف بنجاح.");
+  });
+
+  $("projectForm").addEventListener("submit",async e => {
+    e.preventDefault();
+    clearMessage();
+
+    const id = $("projectId").value;
+    const title = $("projectTitle").value.trim();
+
+    const record = {
+      title,
+      slug: id
+        ? (projects.find(p => p.id === id)?.slug || "project-" + Date.now())
+        : "project-" + Date.now(),
+      category_id:$("projectCategory").value || null,
+      summary:$("projectSummary").value.trim(),
+      description:$("projectDescription").value.trim(),
+      cover_image_url:$("projectImage").value.trim() || null,
+      location:$("projectLocation").value.trim(),
+      beneficiary_count:$("projectBeneficiaries").value
+        ? Number($("projectBeneficiaries").value) : null,
+      target_amount:$("projectAmount").value
+        ? Number($("projectAmount").value) : null,
+      currency:$("projectCurrency").value.trim() || "SDG",
+      status:$("projectStatus").value,
+      start_date:$("projectStart").value || null,
+      end_date:$("projectEnd").value || null,
+      published_at:$("projectPublished").value
+        ? new Date($("projectPublished").value + "T12:00:00").toISOString()
+        : null,
+      updated_at:new Date().toISOString()
+    };
+
+    const result = id
+      ? await client.from("projects").update(record).eq("id",id)
+      : await client.from("projects").insert(record);
+
+    if (result.error) {
+      message("تعذر حفظ المشروع: " + result.error.message);
+      return;
+    }
+
+    resetProject();
+    await loadData();
+    message("تم حفظ المشروع بنجاح.");
+  });
+
+  $("categoriesList").addEventListener("click",async e => {
+    const edit = e.target.closest("[data-edit-category]");
+    const del = e.target.closest("[data-delete-category]");
+
+    if (edit) {
+      const c = categories.find(x => x.id === edit.dataset.editCategory);
+      if (!c) return;
+      $("categoryId").value = c.id;
+      $("categoryName").value = c.name || "";
+      $("categoryDescription").value = c.description || "";
+      $("categoryIcon").value = c.icon || "";
+      $("categoryActive").checked = c.is_active;
+      $("categoryForm").scrollIntoView({behavior:"smooth"});
+    }
+
+    if (del) {
+      const id = del.dataset.deleteCategory;
+      if (!confirm("هل تريد حذف هذا التصنيف؟")) return;
+
+      const {error} = await client.from("categories").delete().eq("id",id);
+      if (error) {
+        message("تعذر حذف التصنيف. قد يكون مرتبطاً بمشاريع: " + error.message);
+        return;
+      }
+      await loadData();
+      message("تم حذف التصنيف.");
+    }
+  });
+
+  $("projectsList").addEventListener("click",async e => {
+    const edit = e.target.closest("[data-edit-project]");
+    const del = e.target.closest("[data-delete-project]");
+
+    if (edit) {
+      const p = projects.find(x => x.id === edit.dataset.editProject);
+      if (!p) return;
+
+      $("projectId").value = p.id;
+      $("projectTitle").value = p.title || "";
+      $("projectCategory").value = p.category_id || "";
+      $("projectStatus").value = p.status || "مسودة";
+      $("projectSummary").value = p.summary || "";
+      $("projectDescription").value = p.description || "";
+      $("projectImage").value = p.cover_image_url || "";
+      $("projectLocation").value = p.location || "";
+      $("projectBeneficiaries").value = p.beneficiary_count ?? "";
+      $("projectAmount").value = p.target_amount ?? "";
+      $("projectCurrency").value = p.currency || "SDG";
+      $("projectStart").value = p.start_date || "";
+      $("projectEnd").value = p.end_date || "";
+      $("projectPublished").value = p.published_at
+        ? p.published_at.slice(0,10) : "";
+
+      $("projectForm").scrollIntoView({behavior:"smooth"});
+    }
+
+    if (del) {
+      const id = del.dataset.deleteProject;
+      if (!confirm("هل تريد حذف هذا المشروع نهائياً؟")) return;
+
+      const {error} = await client.from("projects").delete().eq("id",id);
+      if (error) {
+        message("تعذر حذف المشروع: " + error.message);
+        return;
+      }
+
+      await loadData();
+      message("تم حذف المشروع.");
+    }
+  });
+
+  $("cancelCategory").addEventListener("click",resetCategory);
+  $("cancelProject").addEventListener("click",resetProject);
+
+  if (!client) {
+    message("تعذر العثور على إعدادات Supabase. راجع ملف supabase-config.js.");
+    return;
+  }
+
+  checkAdmin();
+})();
+</script>
+</body>
+</html>
